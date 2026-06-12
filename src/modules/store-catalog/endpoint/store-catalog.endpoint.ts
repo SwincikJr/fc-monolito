@@ -1,30 +1,33 @@
-import { Application, Router } from "express";
-import ProductRepository from "../repository/product.repository";
-import FindProductUseCase from "../usecase/find-product/find-product.usecase";
-import FindAllProductsUsecase from "../usecase/find-all-products/find-all-products.usecase";
+// Por não fazer parte do desafio proposto, mantive esse endpoint comentado
+// Porém, é possível também oferecê-lo ao app usuário do módulo.
 
-export default function storeCatalogEndpoint(baseEndpoint: string, router: Router, app: Application) {
-    const repository = new ProductRepository();
-    const findUseCase = new FindProductUseCase(repository);
-    const findAllUseCase = new FindAllProductsUsecase(repository);
+// import { Application, Router } from "express";
+// import ProductRepository from "../repository/product.repository";
+// import FindProductUseCase from "../usecase/find-product/find-product.usecase";
+// import FindAllProductsUsecase from "../usecase/find-all-products/find-all-products.usecase";
 
-    router.get("/:id", async (req, res) => {
-        try {
-            const product = await findUseCase.execute({ id: req.params.id });
-            return res.status(200).json(product);
-        } catch (error: any) {
-            return res.status(500).send(error.message)
-        }
-    })
+// export default function storeCatalogEndpoint(baseEndpoint: string, router: Router, app: Application) {
+//     const repository = new ProductRepository();
+//     const findUseCase = new FindProductUseCase(repository);
+//     const findAllUseCase = new FindAllProductsUsecase(repository);
 
-    router.get("", async (req, res) => {
-        try {
-            const products = await findAllUseCase.execute();
-            return res.status(200).send(products);
-        } catch(error: any) {
-            return res.status(500).send(error.message)
-        }
-    })
+//     router.get("/:id", async (req, res) => {
+//         try {
+//             const product = await findUseCase.execute({ id: req.params.id });
+//             return res.status(200).json(product);
+//         } catch (error: any) {
+//             return res.status(500).send(error.message)
+//         }
+//     })
 
-    app.use(baseEndpoint, router);
-}
+//     router.get("", async (req, res) => {
+//         try {
+//             const products = await findAllUseCase.execute();
+//             return res.status(200).send(products);
+//         } catch(error: any) {
+//             return res.status(500).send(error.message)
+//         }
+//     })
+
+//     app.use(baseEndpoint, router);
+// }

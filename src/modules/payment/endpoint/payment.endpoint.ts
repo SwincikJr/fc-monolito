@@ -1,19 +1,22 @@
-import { Application, Router } from "express";
-import ProcessPaymentUseCase from "../usecase/process-payment/process-payment.usecase";
-import TransactionRepostiory from "../repository/transaction.repository";
+// Por não fazer parte do desafio proposto, mantive esse endpoint comentado
+// Porém, é possível também oferecê-lo ao app usuário do módulo.
 
-export default function paymentEndpoint(baseEndpoint: string, router: Router, app: Application) {
-    const repository = new TransactionRepostiory();
-    const processUseCase = new ProcessPaymentUseCase(repository);
+// import { Application, Router } from "express";
+// import ProcessPaymentUseCase from "../usecase/process-payment/process-payment.usecase";
+// import TransactionRepostiory from "../repository/transaction.repository";
 
-    router.post("", async (req, res) => {
-        try {
-            const payment = await processUseCase.execute(req.body);
-            return res.status(200).json(payment);
-        } catch(error: any) {
-            return res.status(500).send(error.message);
-        }
-    })
+// export default function paymentEndpoint(baseEndpoint: string, router: Router, app: Application) {
+//     const repository = new TransactionRepostiory();
+//     const processUseCase = new ProcessPaymentUseCase(repository);
 
-    app.use(baseEndpoint, router);
-}
+//     router.post("", async (req, res) => {
+//         try {
+//             const payment = await processUseCase.execute(req.body);
+//             return res.status(200).json(payment);
+//         } catch(error: any) {
+//             return res.status(500).send(error.message);
+//         }
+//     })
+
+//     app.use(baseEndpoint, router);
+// }

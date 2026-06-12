@@ -1,12 +1,12 @@
 import { Application, Router } from "express";
 import FindInvoiceUseCase from "../usecase/find-invoice/find-invoice.usecase";
 import InvoiceRepository from "../repository/invoice.repository";
-import GenerateInvoiceUseCase from "../usecase/generate-invoice/generate-invoice.usecase";
+// import GenerateInvoiceUseCase from "../usecase/generate-invoice/generate-invoice.usecase";
 
 export default function invoiceEndpoint(baseEndpoint: string, router: Router, app: Application) {
     const repository = new InvoiceRepository();
     const findUseCase = new FindInvoiceUseCase(repository);
-    const generateUseCase = new GenerateInvoiceUseCase(repository);
+    // const generateUseCase = new GenerateInvoiceUseCase(repository);
 
     router.get("/:id", async (req, res) => {
         try {
@@ -17,14 +17,16 @@ export default function invoiceEndpoint(baseEndpoint: string, router: Router, ap
         }
     })
 
-    router.post("", async (req, res) => {
-        try {
-            const invoice = await generateUseCase.execute(req.body);
-            return res.status(201).json(invoice);
-        } catch (error: any) {
-            return res.status(500).send(error.message);
-        }
-    })
+    // Por não fazer parte do desafio proposto, mantive esse endpoint comentado
+    // Porém, é possível também oferecê-lo ao app usuário do módulo.
+    // router.post("", async (req, res) => {
+    //     try {
+    //         const invoice = await generateUseCase.execute(req.body);
+    //         return res.status(201).json(invoice);
+    //     } catch (error: any) {
+    //         return res.status(500).send(error.message);
+    //     }
+    // })
 
     app.use(baseEndpoint, router);
 }

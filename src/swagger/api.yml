@@ -1,0 +1,306 @@
+openapi: 3.0.3
+info:
+  title: API de Gerenciamento de Produtos, Clientes e Pedidos
+  description: API local para cadastro de produtos, clientes, realização de checkout e consulta de notas fiscais.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Servidor Local
+paths:
+  /products:
+    post:
+      summary: Criar Produto
+      description: Cadastra um novo produto no sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '201':
+          description: Produto criado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductOutput'
+
+  /clients:
+    post:
+      summary: Cadastrar Cliente
+      description: Cadastra um novo cliente com suas informações pessoais e endereço.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInput'
+      responses:
+        '201':
+          description: Cliente cadastrado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientOutput'
+
+  /checkout:
+    post:
+      summary: Submeter Pedido
+      description: Realiza o checkout de um pedido vinculando um cliente aos produtos selecionados.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutInput'
+      responses:
+        '201':
+          description: Pedido submetido e aprovado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutOutput'
+
+  /invoice/{invoiceId}:
+    get:
+      summary: Consultar Nota Fiscal
+      description: Retorna os detalhes de uma nota fiscal gerada a partir do seu ID de identificação.
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          description: ID da nota fiscal a ser consultada
+          schema:
+            type: string
+            format: uuid
+            example: "6fbd0dde-d365-4db2-9b6a-4f23cac68372"
+      responses:
+        '200':
+          description: Nota fiscal encontrada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceOutput'
+
+components:
+  schemas:
+    Address:
+      type: object
+      required:
+        - street
+        - number
+        - city
+        - state
+        - zipCode
+      properties:
+        street:
+          type: string
+          example: "client street"
+        number:
+          type: string
+          example: "00"
+        complement:
+          type: string
+          example: "first floor"
+        city:
+          type: string
+          example: "client city"
+        state:
+          type: string
+          example: "client state"
+        zipCode:
+          type: string
+          example: "99999"
+
+    ProductInput:
+      type: object
+      required:
+        - name
+        - description
+        - purchasePrice
+        - salesPrice
+        - stock
+      properties:
+        name:
+          type: string
+          example: "Produto 1"
+        description:
+          type: string
+          example: "descrição do produto 1"
+        purchasePrice:
+          type: number
+          example: 10
+        salesPrice:
+          type: number
+          example: 200
+        stock:
+          type: integer
+          example: 50
+
+    ProductOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "aaf66ad6-0191-4fd0-a660-2fdb9eb91990"
+        name:
+          type: string
+          example: "Produto 1"
+        description:
+          type: string
+          example: "descrição do produto 1"
+        purchasePrice:
+          type: number
+          example: 10
+        salesPrice:
+          type: number
+          example: 200
+        stock:
+          type: integer
+          example: 50
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-06-12T16:46:18.357Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-06-12T16:46:18.357Z"
+
+    ClientInput:
+      type: object
+      required:
+        - name
+        - email
+        - document
+        - address
+      properties:
+        name:
+          type: string
+          example: "Some Client"
+        email:
+          type: string
+          format: email
+          example: "someclient@email.com"
+        document:
+          type: string
+          example: "999"
+        address:
+          $ref: '#/components/schemas/Address'
+
+    ClientOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "64c6e316-3a09-4fb2-b9d8-0a829c88fd1b"
+        name:
+          type: string
+          example: "Some Client"
+        email:
+          type: string
+          format: email
+          example: "someclient@email.com"
+        document:
+          type: string
+          example: "999"
+        address:
+          $ref: '#/components/schemas/Address'
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-06-12T16:48:32.846Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-06-12T16:48:32.846Z"
+
+    CheckoutItem:
+      type: object
+      required:
+        - productId
+      properties:
+        productId:
+          type: string
+          format: uuid
+          example: "aaf66ad6-0191-4fd0-a660-2fdb9eb91990"
+
+    CheckoutInput:
+      type: object
+      required:
+        - clientId
+        - products
+      properties:
+        clientId:
+          type: string
+          format: uuid
+          example: "64c6e316-3a09-4fb2-b9d8-0a829c88fd1b"
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/CheckoutItem'
+
+    CheckoutOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "07f92672-d2b3-4a58-8ebe-234866ccb887"
+        invoiceId:
+          type: string
+          format: uuid
+          example: "6fbd0dde-d365-4db2-9b6a-4f23cac68372"
+        status:
+          type: string
+          example: "approved"
+        total:
+          type: number
+          example: 200
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/CheckoutItem'
+
+    InvoiceItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "aaf66ad6-0191-4fd0-a660-2fdb9eb91990"
+        name:
+          type: string
+          example: "Produto 1"
+        price:
+          type: number
+          example: 200
+
+    InvoiceOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "6fbd0dde-d365-4db2-9b6a-4f23cac68372"
+        name:
+          type: string
+          example: "Some Client"
+        document:
+          type: string
+          example: "999"
+        address:
+          $ref: '#/components/schemas/Address'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItem'
+        total:
+          type: number
+          example: 200
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-06-12T16:50:50.348Z"
