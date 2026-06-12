@@ -6,6 +6,7 @@ import PaymentFacadeInterface from "../../../payment/facade/facade.interface";
 import ProductAdmFacade from "../../../product-adm/facade/product-adm.facade";
 import ProductAdmFacadeInterface from "../../../product-adm/facade/product-adm.facade.interface";
 import StoreCatalogFacade from "../../../store-catalog/facade/store-catalog.facade";
+import StoreCatalogFacadeInterface from "../../../store-catalog/facade/store-catalog.facade.interface";
 import Client from "../../domain/client.entity";
 import Order from "../../domain/order.entity";
 import Product from "../../domain/product.entity";
@@ -15,15 +16,15 @@ import { PlaceOrderInputDto, PlaceOrderOutputDto } from "./place-order.dto";
 export default class PlaceOrderUseCase implements UseCaseInterface {
     private _clientFacade: ClientAdmFacadeInterface;
     private _productFacade: ProductAdmFacadeInterface;
-    private _catalogFacade: StoreCatalogFacade;
+    private _catalogFacade: StoreCatalogFacadeInterface;
     private _repository: CheckoutGateway;
     private _invoiceFacade: InvoiceFacadeInterface;
     private _paymentFacade: PaymentFacadeInterface;
 
     constructor(
         clientFacade: ClientAdmFacadeInterface, 
-        productFacade: ProductAdmFacade,
-        catalogFacade: StoreCatalogFacade,
+        productFacade: ProductAdmFacadeInterface,
+        catalogFacade: StoreCatalogFacadeInterface,
         repository: CheckoutGateway,
         invoiceFacade: InvoiceFacadeInterface,
         paymentFacade: PaymentFacadeInterface) {
@@ -33,7 +34,7 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
         this._catalogFacade = catalogFacade;
         this._repository = repository;
         this._invoiceFacade = invoiceFacade;
-        this._paymentFacade = paymentFacade;
+        this._paymentFacade = paymentFacade;    
     }
 
     async execute(input: PlaceOrderInputDto): Promise<PlaceOrderOutputDto> {
@@ -57,6 +58,8 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
             client: myClient,
             products
         });
+
+        await this._repository.addOrder(order);
         
         const payment = await this._paymentFacade.process({
             orderId: order.id.id,
@@ -81,9 +84,11 @@ export default class PlaceOrderUseCase implements UseCaseInterface {
                     }))
                 }) : null
 
-        payment.status === "approved" && order.approved();
-        this._repository.addOrder(order);
-        
+        if (payment.status === "approved") {
+            order.approved()
+            await this._repository.saveOrder(order)
+        }
+
         return {
             id: order.id.id,
             invoiceId: payment.status === "approved" ? invoice.id : null,

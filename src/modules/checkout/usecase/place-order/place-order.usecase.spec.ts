@@ -203,7 +203,8 @@ describe("PlaceOrderUseCase unit test", () => {
 
             const mockCheckoutRepository = {
                 addOrder: jest.fn(),
-                findOrder: jest.fn()
+                findOrder: jest.fn(),
+                saveOrder: jest.fn()
             };
 
             const mockInvoiceFacade = {

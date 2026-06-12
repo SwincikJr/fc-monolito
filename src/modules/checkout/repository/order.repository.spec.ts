@@ -103,6 +103,7 @@ describe("Order Repository test", () => {
         })
 
         await OrderProductModel.create({
+            id: '1',
             orderId: 'o1',
             productId: 'p1',
             createdAt: new Date(),

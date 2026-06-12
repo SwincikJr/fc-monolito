@@ -7,6 +7,7 @@ import Product from "../domain/product.entity";
 import CheckoutGateway from "../gateway/checkout.gateway";
 import { OrderProductModel } from "./order-product.model";
 import { OrderModel } from "./order.model";
+import IdValue from "../../@shared/domain/value-object/id.value-object"
 
 export default class OrderReporitory implements CheckoutGateway {
     async addOrder(order: Order): Promise<void> {
@@ -19,6 +20,7 @@ export default class OrderReporitory implements CheckoutGateway {
         })
 
         await OrderProductModel.bulkCreate(order.products.map(p => ({
+            id: (new IdValue()).id,
             orderId: order.id.id,
             productId: p.id.id,
             createdAt: order.createdAt,
@@ -53,5 +55,9 @@ export default class OrderReporitory implements CheckoutGateway {
             })),
             status: order.status
         });
+    }
+
+    async saveOrder(order: Order): Promise<void> {
+        await OrderModel.update(order, { where: { id: order.id.id } });
     }
 }

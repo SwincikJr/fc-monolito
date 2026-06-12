@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "npm run migrate up && nodemon",
-    "test": "npm run tsc -- --noEmit && jest",
+    "test": "npm run tsc -- --noEmit && jest --silent",
     "tsc": "tsc",
     "migrate": "node -r ts-node/register/transpile-only ./src/database/config-migrations/migrator-cli.ts"
   },
